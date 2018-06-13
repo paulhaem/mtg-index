@@ -27,7 +27,8 @@ jsonStream.output.on('data', function ({index, value}) {
 					subtypes_txt_sort: card.subtypes,
 					text_txt_sort: card.text, 
 					toughness_i: card.toughness,
-					types_txt_sort: card.types
+					types_txt_sort: card.types,
+					_text_: val.name + " " + card.artist + " " + card.name + " " + card.text
 				}
 				if(isNaN(card.power)) cardJson.power_i = -1
 				if(isNaN(card.toughness)) cardJson.toughness_i = -1
