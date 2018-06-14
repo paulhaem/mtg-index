@@ -19,17 +19,19 @@ jsonStream.output.on('data', function ({index, value}) {
 					artist_txt_en: card.artist,
 					cmc_i: card.cmc,
 					colors_txt_sort: card.colors,
-					multiverseId_i: card.multiverseId,
+					multiverseId_i: card.multiverseid,
 					name_txt_en: card.name,
 					power_i: card.power,
 					rarity_txt_en: card.rarity,
 					subtypes_txt_sort: card.subtypes,
 					text_txt_sort: card.text, 
 					toughness_i: card.toughness,
-					types_txt_sort: card.types
+					types_txt_sort: card.types,
+					_text_: val.name + " " + card.artist + " " + card.name + " " + card.text
 				}
 				if(isNaN(card.power)) cardJson.power_i = -1
 				if(isNaN(card.toughness)) cardJson.toughness_i = -1
+				if(isNaN(card.multiverseid)) cardJson.multiverseId_i = 0
 				if(val.releaseDate.length <= 4) cardJson.releaseDate_dt += '-01-01'
 				accumData(cardJson)
 			})
