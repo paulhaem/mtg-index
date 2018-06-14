@@ -10,7 +10,6 @@ const PATH = './resources/AllSets.json'
 let documents = []
 
 jsonStream.output.on('data', function ({index, value}) {
-
 	for (const [key, val] of Object.entries(value)) {
 		if(val) {
 			val.cards.forEach((card) => {
@@ -40,39 +39,47 @@ jsonStream.output.on('data', function ({index, value}) {
 
 jsonStream.output.on('end', function () {
 	sendData(documents)
-    documents = []
-	console.log('All done')
+  documents = []
+	console.log('All documents sent!')
+
+	console.log('Building spellcheck index ...')
+  let response = request('GET', 'http://localhost:8983/solr/gettingstarted/spell?spellcheck.build=true');
+  if (response.statusCode !== 200) {
+    throw(response.body)
+  } else {
+    console.log('Spellcheck index built!')
+  }
 })
 
 fs.createReadStream(PATH).pipe(jsonStream.input)
 
 // accumulates JSON objects in array until 10k before they are sent
 function accumData(postData) {
-
-    documents.push(postData)
-    if(documents.length == 10000){
-        // send array of JSON objects to solr server
-        console.log('sending')
-        sendData(documents)
-		documents = []
-    }
+  documents.push(postData)
+  if(documents.length == 10000){
+    // send array of JSON objects to solr server
+    sendData(documents)
+    documents = []
+  }
 }
 
 // sends data to solr server
 function sendData(postData){
+  console.log(`Sending ${postData.length} document(s) ...`)
 
-    var clientServerOptions = {
-        body: JSON.stringify(postData),
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+  const clientServerOptions = {
+    body: JSON.stringify(postData),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
     }
-    // on response from server, log response
-    let response = request('POST', 'http://localhost:8983/solr/gettingstarted/update/json/docs?commit=true&overwrite=true', clientServerOptions);
-    if (response.statusCode !== 200) {
-      throw(response.body)
-    } else {
-      console.log('sent')
-    }
+	}
+	
+  // on response from server, log response
+  let response = request('POST', 'http://localhost:8983/solr/gettingstarted/update/json/docs?commit=true&overwrite=true', clientServerOptions);
+  if (response.statusCode !== 200) {
+    throw(response.body)
+  } else {
+    console.log(`${postData.length} document(s) sent!`)
+  }
 }
