@@ -33,6 +33,7 @@ jsonStream.output.on('data', function ({index, value}) {
 				if(isNaN(card.toughness)) cardJson.toughness_i = -1
 				if(isNaN(card.multiverseid)) cardJson.multiverseId_i = 0
 				if(val.releaseDate.length <= 4) cardJson.releaseDate_dt += '-01-01'
+				if(!card.colors) cardJson.colors_txt_sort = ["Colorless"]
 				accumData(cardJson)
 			})
 		}
